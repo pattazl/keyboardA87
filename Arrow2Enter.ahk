@@ -67,6 +67,8 @@ CapsLock & PgUp::Numpad6
 CapsLock & PrintScreen::Numpad7
 CapsLock & ScrollLock::Numpad8
 CapsLock & Pause::Numpad9
+CapsLock & Down::NumpadSub
+CapsLock & Right::NumpadAdd
 ; 当大写开关开着时，改变按键含义
 #HotIf !holdCapsLockFlag and GetKeyState("CapsLock", "T")
 Left::Numpad0
@@ -80,4 +82,6 @@ PgUp::Numpad6
 PrintScreen::Numpad7
 ScrollLock::Numpad8
 Pause::Numpad9
+Down::NumpadSub
+Right::NumpadAdd
 #HotIf
