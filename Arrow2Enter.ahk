@@ -36,22 +36,66 @@ MenuHandler(*) {
 }
 
 ; 用键盘右下方的 方向下+方向右 = 回车 
-Down & Right::Enter     ; 先按Down，后按Right触发Enter
-; ~Down & Right::Enter  ;  将不阻止Down的触发会导致多次执行Down
-$Down::Send "{Down}"    ; 发送模拟按键 Down。
-; 发送各种快捷键组合 Down 模拟特殊快捷键
-^Down::Send "^{Down}"
-+Down::Send "+{Down}"
-!Down::Send "!{Down}"
-!+Down::Send "!+{Down}"
-^+Down::Send "^+{Down}"
-^!Down::Send "^!{Down}"
-^!+Down::Send "^!+{Down}"
-#Down::Send "#{Down}"
-#!+Down::Send "#!+{Down}"
-#^+Down::Send "#^+{Down}"
-#^!Down::Send "#^!{Down}"
-#^!+Down::Send "#^!+{Down}"
+waitDownMS := 500
+downState := 0  ; 按下锁定标记
+timeout:=0
+$Down::
+{
+	global downState
+	global timeout
+	StartTime := A_TickCount
+	;OutputDebug "autohotkey 1 downState " downState " ,timeout " timeout
+	IsDown:= GetKeyState("Down","P")
+	;OutputDebug "autohotkey 1 downState " downState ",IsDown:" IsDown
+	; 第一次按住状态，需要锁定
+	if(IsDown ==1 && downState == 0)
+	{
+		;OutputDebug "autohotkey True"
+		BlockInput True
+		downState := 1
+		timeout := 0
+	}
+	sendEnter:=0
+	Loop 
+	{
+		if( downState == 1 && (A_TickCount - StartTime)< waitDownMS ) 
+		{
+			IsRight:= GetKeyState("Right","P")
+			if(IsRight)
+			{
+				sendEnter:=1
+			}
+		}else{
+			timeout := 1
+		}
+		IsDown:= GetKeyState("Down","P")
+		;OutputDebug "autohotkey 2 downState:" downState ", timeout: " timeout " IsDown: " IsDown
+		; 释放按钮
+		if(IsDown==0){
+			downState := 0
+		}
+		; 解除开始超时
+		if(IsDown==0 || timeout ==1 || sendEnter==1 ){
+			BlockInput False
+			;OutputDebug "autohotkey False"
+			if(sendEnter==0){
+				Send "{Down}"
+				;OutputDebug "autohotkey send Down 3"
+			}else{
+				Send "{Enter}"
+				;OutputDebug "autohotkey send Enter 4"
+			}
+		}
+		if(downState==0||sendEnter==1)
+		{
+			timeout:=0
+			downState:=0
+			break
+		}
+		; 按内置的 按键延时来响应
+		Sleep(A_KeyDelay)
+	}
+}
 
 ; 替换右侧上方控制键为数字键，0 为方向键左 ，小数点为方向键上
 ; 以下可以通过按住大写切换键盘实现，代码如下,也可通过 Hotkey 函数动态实现，比较麻烦
