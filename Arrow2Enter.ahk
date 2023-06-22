@@ -4,14 +4,26 @@ A_TrayMenu.Delete("&Pause Script")  ; 删除暂停菜单
 
 iniFile:= "Arrow2Enter.ini"
 secName:= "Arrow2Enter"
-secKey:= "HoldCapsLock"
+secKey := "HoldCapsLock"
 global holdCapsLockFlag
 holdCapsLockFlag := IniRead(iniFile, secName , secKey ,1)
+repeatMaxMs := IniRead(iniFile, secName , "repeatMaxMs" ,500) ; 重复最大 1000/2
+repeatMinMs := IniRead(iniFile, secName , "repeatMinMs" ,30)  ; 重复最小 1000/30
+delayMaxMs := IniRead(iniFile, secName , "delayMaxMs" ,1000) ; 延时最大 1000
+delayMinMs := IniRead(iniFile, secName , "delayMinMs" ,250)  ; 延时最小 250
+; 获取系统按键延时和重复速度
+keyDelay:= RegRead( "HKEY_CURRENT_USER\Control Panel\Keyboard", "KeyboardDelay")
+keySpeed:= RegRead( "HKEY_CURRENT_USER\Control Panel\Keyboard", "KeyboardSpeed")
+; 系统按键延时范围为0-3 ; 一般默认1，为500ms
+waitDownMS := delayMinMs + (delayMaxMs - delayMinMs)/3*keyDelay
+; 系统按键速度范围为0-31
+repeatCurrent:= repeatMaxMs + (repeatMinMs-repeatMaxMs)/31*keySpeed
+
 If(holdCapsLockFlag) {
-	A_TrayMenu.Add("CapsLock Hold", MenuHandler)  ; 默认需要按住大写键生效
+	A_TrayMenu.Add("Caps&Lock Hold", MenuHandler)  ; 默认需要按住大写键生效
 	;A_TrayMenu.Rename("CapsLock Hold","When CapsLock")
 } Else {
-	A_TrayMenu.Add("When CapsLock", MenuHandler)  ; 默认需要按住大写键生效
+	A_TrayMenu.Add("When Caps&Lock", MenuHandler)  ; 默认需要按住大写键生效
 	;A_TrayMenu.Rename("When CapsLock","CapsLock Hold")
 }
 MenuHandler(*) {
@@ -36,7 +48,6 @@ MenuHandler(*) {
 }
 
 ; 用键盘右下方的 方向下+方向右 = 回车 
-waitDownMS := 500
 downState := 0  ; 按下锁定标记
 timeout:=0
 $Down::
@@ -93,7 +104,7 @@ $Down::
 			break
 		}
 		; 按内置的 按键延时来响应
-		Sleep(A_KeyDelay)
+		Sleep(repeatCurrent) ; 暂不用 A_KeyDelay
 	}
 }
 
