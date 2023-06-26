@@ -41,7 +41,10 @@
 | Pause| Numpad9 |
 | Down| NumpadSub |
 | Right| NumpadAdd |
+| F12 | NumpadMult |
+| \ | NumpadDiv |
 
+![keyboard](keyboard.png)
 
 
 ## 配置文件
