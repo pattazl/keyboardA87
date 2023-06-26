@@ -93,8 +93,8 @@ $Down::
 				Send "{Down}"
 				;OutputDebug "autohotkey send Down 3"
 			}else{
-				Send "{Enter}"
-				;OutputDebug "autohotkey send Enter 4"
+				Send "{NumpadEnter}"
+				;OutputDebug "autohotkey send NumpadEnter 4"
 			}
 		}
 		if(downState==0||sendEnter==1)
@@ -124,6 +124,10 @@ CapsLock & ScrollLock::Numpad8
 CapsLock & Pause::Numpad9
 CapsLock & Down::NumpadSub
 CapsLock & Right::NumpadAdd
+CapsLock & F12::NumpadMult
+CapsLock & BS::BS           ; 防止频繁放开CapsLock键，哪怕按backspace的时候也可以按住CapsLock键
+CapsLock & vkDC::NumpadDiv  ; KEY  \
+
 ; 当大写开关开着时，改变按键含义
 #HotIf !holdCapsLockFlag and GetKeyState("CapsLock", "T")
 Left::Numpad0
@@ -139,4 +143,6 @@ ScrollLock::Numpad8
 Pause::Numpad9
 Down::NumpadSub
 Right::NumpadAdd
+F12::NumpadMult
+vkDC::NumpadDiv   ; KEY  \
 #HotIf

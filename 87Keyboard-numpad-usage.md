@@ -30,8 +30,13 @@ Pressing the Right key within the specified delay milliseconds of holding down t
 | Pause| Numpad9 |
 | Down| NumpadSub |
 | Right| NumpadAdd |
+| F12 | NumpadMult |
+| \ | NumpadDiv |
+
+![keyboard](keyboard.png)
 
 ##Configuration file
+
 The configuration file Arrow2Enter.ini is saved in the same directory as Arrow2Enter.exe, and the default section is [Arrow2Enter]
 1. The setting parameters of CapsLock Hold/When are saved in the HoldCapsLock parameters
 2. The parameters of repeatMaxMs and repeatMinMs can be modified to control the maximum and minimum interval time when pressing and holding the direction keys. The repetition interval depends on the repetition speed setting of the system's keyboard (range 0-31)
