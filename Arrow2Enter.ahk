@@ -107,7 +107,14 @@ $Down::
 		Sleep(repeatCurrent) ; 暂不用 A_KeyDelay
 	}
 }
-
+; 禁止一切 ScrollLock 的组合消息响应
+*$ScrollLock::
+{
+	BlockInput True
+	Sleep(waitDownMS)  ; 暂停一会儿，用于过滤键盘内置的自动化发送事件T
+	BlockInput False
+	Send("{ScrollLock}")
+}
 ; 替换右侧上方控制键为数字键，0 为方向键左 ，小数点为方向键上
 ; 以下可以通过按住大写切换键盘实现，代码如下,也可通过 Hotkey 函数动态实现，比较麻烦
 #HotIf holdCapsLockFlag
@@ -120,7 +127,15 @@ CapsLock & Ins::Numpad4
 CapsLock & Home::Numpad5
 CapsLock & PgUp::Numpad6
 CapsLock & PrintScreen::Numpad7
-CapsLock & ScrollLock::Numpad8
+CapsLock & ScrollLock::
+{
+	caps := GetKeyState("CapsLock", "T") ; 获取按下时的状态8
+	BlockInput True
+	Send("{Numpad8}")
+	Sleep(waitDownMS)  ; 暂停一会儿，用于过滤键盘内置的自动化发送事件
+	BlockInput False
+	SetCapsLockState(!caps) ; 还原回去
+}
 CapsLock & Pause::Numpad9
 CapsLock & Down::NumpadSub
 CapsLock & Right::NumpadAdd
@@ -139,10 +154,17 @@ Ins::Numpad4
 Home::Numpad5
 PgUp::Numpad6
 PrintScreen::Numpad7
-ScrollLock::Numpad8
+ScrollLock::
+{
+	BlockInput True
+	Send("{Numpad8}")
+	Sleep(waitDownMS)  ; 暂停一会儿，用于过滤键盘内置的自动化发送事件
+	BlockInput False
+}
 Pause::Numpad9
 Down::NumpadSub
 Right::NumpadAdd
 F12::NumpadMult
 vkDC::NumpadDiv   ; KEY  \
 #HotIf
+
