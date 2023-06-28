@@ -107,13 +107,33 @@ $Down::
 		Sleep(repeatCurrent) ; 暂不用 A_KeyDelay
 	}
 }
+; 标记是否临时启用 ScrollLock
+suspFlag:=0
 ; 禁止一切 ScrollLock 的组合消息响应
 *$ScrollLock::
 {
+	global suspFlag
+	if(suspFlag==0)
+	{
+		BlockInput True
+		Sleep(waitDownMS)  ; 暂停一会儿，用于过滤键盘内置的自动化发送事件T
+		BlockInput False
+		Send("{ScrollLock}")
+	}else{
+		Send("{ScrollLock}")
+	}
+	suspFlag :=0
+	;OutputDebug("AutoHotkey all ScrollLock")
+}
+; ctrl+alt+ scrLock 临时启用
+^!ScrollLock::
+{
+	global suspFlag
+	suspFlag:=1
 	BlockInput True
 	Sleep(waitDownMS)  ; 暂停一会儿，用于过滤键盘内置的自动化发送事件T
 	BlockInput False
-	Send("{ScrollLock}")
+	;OutputDebug("AutoHotkey ctrl+alt ScrollLock")
 }
 ; 替换右侧上方控制键为数字键，0 为方向键左 ，小数点为方向键上
 ; 以下可以通过按住大写切换键盘实现，代码如下,也可通过 Hotkey 函数动态实现，比较麻烦
