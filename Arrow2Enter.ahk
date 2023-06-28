@@ -107,33 +107,51 @@ $Down::
 		Sleep(repeatCurrent) ; 暂不用 A_KeyDelay
 	}
 }
-; 标记是否临时启用 ScrollLock
+; 标记是否临时启用 F9
 suspFlag:=0
-; 禁止一切 ScrollLock 的组合消息响应
-*$ScrollLock::
+; 禁止一切 F9 的组合消息响应
+*$F9::
 {
 	global suspFlag
+	sendKeyOpt := ""
 	if(suspFlag==0)
 	{
+		if( GetKeyState("Ctrl","P"))
+		{
+			sendKeyOpt:= sendKeyOpt "^"
+		}
+		if( GetKeyState("Shift","P"))
+		{
+			sendKeyOpt:= sendKeyOpt "+"
+		}
+		if( GetKeyState("Alt","P"))
+		{
+			sendKeyOpt:= sendKeyOpt "!"
+		}
+		if( GetKeyState("LWin","P") || GetKeyState("RWin","P"))
+		{
+			sendKeyOpt:= sendKeyOpt "#"
+		}
 		BlockInput True
 		Sleep(waitDownMS)  ; 暂停一会儿，用于过滤键盘内置的自动化发送事件T
 		BlockInput False
-		Send("{ScrollLock}")
+		sendKeyOpt := sendKeyOpt "{F9}"
+		Send( sendKeyOpt )
 	}else{
-		Send("{ScrollLock}")
+		Send("{F9}")
 	}
 	suspFlag :=0
-	;OutputDebug("AutoHotkey all ScrollLock")
+	OutputDebug("AutoHotkey all F9," sendKeyOpt)
 }
 ; ctrl+alt+ scrLock 临时启用
-^!ScrollLock::
+^!F9::
 {
 	global suspFlag
 	suspFlag:=1
 	BlockInput True
-	Sleep(waitDownMS)  ; 暂停一会儿，用于过滤键盘内置的自动化发送事件T
+	Sleep(waitDownMS)  ; 暂停一会儿，用于过滤键盘内置的自动化发送事件
 	BlockInput False
-	;OutputDebug("AutoHotkey ctrl+alt ScrollLock")
+	;OutputDebug("AutoHotkey ctrl+alt F9")
 }
 ; 替换右侧上方控制键为数字键，0 为方向键左 ，小数点为方向键上
 ; 以下可以通过按住大写切换键盘实现，代码如下,也可通过 Hotkey 函数动态实现，比较麻烦
@@ -147,15 +165,7 @@ CapsLock & Ins::Numpad4
 CapsLock & Home::Numpad5
 CapsLock & PgUp::Numpad6
 CapsLock & PrintScreen::Numpad7
-CapsLock & ScrollLock::
-{
-	caps := GetKeyState("CapsLock", "T") ; 获取按下时的状态8
-	BlockInput True
-	Send("{Numpad8}")
-	Sleep(waitDownMS)  ; 暂停一会儿，用于过滤键盘内置的自动化发送事件
-	BlockInput False
-	SetCapsLockState(!caps) ; 还原回去
-}
+CapsLock & ScrollLock::Numpad8
 CapsLock & Pause::Numpad9
 CapsLock & Down::NumpadSub
 CapsLock & Right::NumpadAdd
@@ -174,13 +184,7 @@ Ins::Numpad4
 Home::Numpad5
 PgUp::Numpad6
 PrintScreen::Numpad7
-ScrollLock::
-{
-	BlockInput True
-	Send("{Numpad8}")
-	Sleep(waitDownMS)  ; 暂停一会儿，用于过滤键盘内置的自动化发送事件
-	BlockInput False
-}
+ScrollLock::Numpad8
 Pause::Numpad9
 Down::NumpadSub
 Right::NumpadAdd
